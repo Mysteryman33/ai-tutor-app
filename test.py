@@ -84,142 +84,228 @@ def ask_ai(prompt, style, mode):
 def home():
     return """
     <!DOCTYPE html>
-    <html>
-    <head>
-        <title>AI Tutor</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background: #f2f2f7;
-                margin: 0;
-                padding: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }
-            .chat-container {
-                width: 420px;
-                height: 650px;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-            }
-            .header {
-                background: #4a6cf7;
-                color: white;
-                padding: 16px;
-                text-align: center;
-                font-size: 20px;
-                font-weight: bold;
-            }
-            #chat {
-                flex: 1;
-                padding: 15px;
-                overflow-y: auto;
-            }
-            .msg {
-                margin: 10px 0;
-                padding: 10px 14px;
-                border-radius: 12px;
-                max-width: 80%;
-                line-height: 1.4;
-            }
-            .user { background: #d1e7ff; align-self: flex-end; }
-            .ai { background: #e9e9eb; align-self: flex-start; }
-            .input-area {
-                display: flex;
-                border-top: 1px solid #ddd;
-            }
-            #msg {
-                flex: 1;
-                padding: 14px;
-                border: none;
-                outline: none;
-                font-size: 16px;
-            }
-            #send {
-                background: #4a6cf7;
-                color: white;
-                border: none;
-                padding: 0 20px;
-                cursor: pointer;
-                font-size: 16px;
-            }
-            #send:hover { background: #3b57d6; }
-        </style>
-    </head>
-    <body>
+<html>
+<head>
+    <title>AI Tutor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Inter", Arial, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background-size: 300% 300%;
+            animation: gradientShift 12s ease infinite;
+        }
 
-        <div class="chat-container">
-            <div class="header">AI Tutor</div>
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-            <div style="padding: 10px; border-bottom: 1px solid #ddd;">
-                <label>Mode:</label>
-                <select id="mode" style="padding: 6px; width: 100%; margin-top: 6px;">
-                    <option value="normal">Normal</option>
-                    <option value="tutor">Tutor (Hints Only)</option>
-                </select>
+        .chat-container {
+            width: 450px;
+            height: 720px;
+            backdrop-filter: blur(22px) saturate(180%);
+            -webkit-backdrop-filter: blur(22px) saturate(180%);
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-                <label style="margin-top: 10px;">Style:</label>
-                <select id="style" style="padding: 6px; width: 100%; margin-top: 6px;">
-                    <option value="friendly">Friendly</option>
-                    <option value="professional">Professional</option>
-                    <option value="sarcastic">Sarcastic</option>
-                    <option value="storyteller">Storyteller</option>
-                </select>
-            </div>
+        .header {
+            padding: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        }
 
-            <div id="chat"></div>
+        .settings {
+            padding: 14px;
+            backdrop-filter: blur(18px);
+            background: rgba(255, 255, 255, 0.10);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        }
 
-            <div class="input-area">
-                <input id="msg" placeholder="Type your message...">
-                <button id="send">Send</button>
-            </div>
+        .settings label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .settings select {
+            width: 100%;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            backdrop-filter: blur(12px);
+            font-size: 14px;
+            outline: none;
+        }
+
+        #chat {
+            flex: 1;
+            padding: 18px;
+            overflow-y: auto;
+        }
+
+        .msg {
+            margin: 12px 0;
+            padding: 14px 18px;
+            border-radius: 16px;
+            max-width: 80%;
+            line-height: 1.45;
+            font-size: 15px;
+            backdrop-filter: blur(14px);
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: rgba(80, 160, 255, 0.35);
+        }
+
+        .ai {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-area {
+            display: flex;
+            padding: 14px;
+            backdrop-filter: blur(18px);
+            background: rgba(255, 255, 255, 0.12);
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        #msg {
+            flex: 1;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            backdrop-filter: blur(12px);
+        }
+
+        #msg::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #send {
+            margin-left: 10px;
+            padding: 0 22px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.35);
+            color: #1a1a1a;
+            backdrop-filter: blur(12px);
+            transition: 0.2s;
+        }
+
+        #send:hover {
+            background: rgba(255, 255, 255, 0.55);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="header">AI Tutor</div>
+
+        <div class="settings">
+            <label>Mode:</label>
+            <select id="mode">
+                <option value="normal">Normal</option>
+                <option value="tutor">Tutor (Hints Only)</option>
+            </select>
+
+            <label>Style:</label>
+            <select id="style">
+                <option value="friendly">Friendly</option>
+                <option value="professional">Professional</option>
+                <option value="sarcastic">Sarcastic</option>
+                <option value="storyteller">Storyteller</option>
+            </select>
         </div>
 
-        <script>
-            const chat = document.getElementById("chat");
-            const msg = document.getElementById("msg");
-            const send = document.getElementById("send");
-            const style = document.getElementById("style");
-            const mode = document.getElementById("mode");
+        <div id="chat"></div>
 
-            function addMessage(text, sender) {
-                const div = document.createElement("div");
-                div.className = "msg " + sender;
-                div.innerText = text;
-                chat.appendChild(div);
-                chat.scrollTop = chat.scrollHeight;
-            }
+        <div class="input-area">
+            <input id="msg" placeholder="Type your message...">
+            <button id="send">Send</button>
+        </div>
+    </div>
 
-            send.onclick = async () => {
-                const text = msg.value.trim();
-                if (!text) return;
+    <script>
+        const chat = document.getElementById("chat");
+        const msg = document.getElementById("msg");
+        const send = document.getElementById("send");
+        const style = document.getElementById("style");
+        const mode = document.getElementById("mode");
 
-                addMessage(text, "user");
-                msg.value = "";
+        function addMessage(text, sender) {
+            const div = document.createElement("div");
+            div.className = "msg " + sender;
+            div.innerText = text;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
 
-                const response = await fetch("/chat", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        message: text,
-                        style: style.value,
-                        mode: mode.value
-                    })
-                });
+        send.onclick = async () => {
+            const text = msg.value.trim();
+            if (!text) return;
 
-                const data = await response.json();
-                addMessage(data.reply, "ai");
-            };
-        </script>
+            addMessage(text, "user");
+            msg.value = "";
 
-    </body>
-    </html>
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    message: text,
+                    style: style.value,
+                    mode: mode.value
+                })
+            });
+
+            const data = await response.json();
+            addMessage(data.reply, "ai");
+        };
+    </script>
+
+</body>
+</html>
     """
 
 
@@ -235,6 +321,7 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
