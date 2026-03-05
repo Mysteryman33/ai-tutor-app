@@ -4,11 +4,9 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Load API key from environment (Render/Railway/Replit)
 HF_API_KEY = "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"
 MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
-# Normal mode styles
 NORMAL_STYLES = {
     "friendly": "You respond warmly, casually, and with humor.",
     "professional": "You respond formally and concisely.",
@@ -16,7 +14,6 @@ NORMAL_STYLES = {
     "storyteller": "You speak dramatically, like a fantasy narrator."
 }
 
-# Tutor mode styles (no direct answers)
 TUTOR_STYLES = {
     "friendly": "You are a friendly tutor. You never give the full answer. You give hints, guiding questions, and small steps to help the student think for themselves.",
     "professional": "You are a clear and structured instructor. You avoid giving direct answers. You explain concepts, give partial steps, and help the student reason through the problem.",
@@ -32,11 +29,11 @@ def ask_ai(prompt, style, mode):
         "Content-Type": "application/json"
     }
 
-    # Choose correct style set
-    if mode == "tutor":
-        system_prompt = TUTOR_STYLES.get(style, "You are a tutor who gives hints, not answers.")
-    else:
-        system_prompt = NORMAL_STYLES.get(style, "You respond normally.")
+    system_prompt = (
+        TUTOR_STYLES.get(style, "You are a tutor who gives hints, not answers.")
+        if mode == "tutor"
+        else NORMAL_STYLES.get(style, "You respond normally.")
+    )
 
     payload = {
         "model": MODEL,
@@ -48,12 +45,28 @@ def ask_ai(prompt, style, mode):
 
     try:
         r = requests.post(url, headers=headers, json=payload, timeout=30)
-        data = r.json()
+        raw = r.text
+        print("RAW RESPONSE:", raw)
 
-        if "error" in data:
-            return "API Error: " + data["error"]["message"]
+        # Try to parse JSON
+        try:
+            data = r.json()
+        except:
+            return f"Error: API returned non‑JSON response: {raw}"
 
-        return data["choices"][0]["message"]["content"]
+        # If API returned an error object
+        if isinstance(data, dict) and "error" in data:
+            return f"API Error: {data['error'].get('message', 'Unknown error')}"
+
+        # If API returned the expected structure
+        if isinstance(data, dict) and "choices" in data:
+            try:
+                return data["choices"][0]["message"]["content"]
+            except:
+                return f"Error: Unexpected model response format: {data}"
+
+        # If API returned something else entirely
+        return f"Unexpected API response: {data}"
 
     except Exception as e:
         return f"Error: {e}"
@@ -211,11 +224,6 @@ def chat():
     return jsonify({"reply": reply})
 
 
-# Required for Render/Railway hosting
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
-
-
