@@ -84,6 +84,8 @@ def ask_ai(prompt, style, mode):
 def home():
     return """
     <!DOCTYPE html>
+<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>AI Tutor</title>
@@ -92,13 +94,15 @@ def home():
             margin: 0;
             padding: 0;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100vw;
             font-family: "Inter", Arial, sans-serif;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+
+            background: radial-gradient(circle at 20% 20%, #ffffff22, #00000055),
+                        linear-gradient(135deg, #6a11cb, #2575fc, #ff6ec4);
             background-size: 300% 300%;
-            animation: gradientShift 12s ease infinite;
+            animation: gradientShift 16s ease infinite;
+
+            overflow: hidden;
         }
 
         @keyframes gradientShift {
@@ -108,40 +112,49 @@ def home():
         }
 
         .chat-container {
-            width: 450px;
-            height: 720px;
-            backdrop-filter: blur(22px) saturate(180%);
-            -webkit-backdrop-filter: blur(22px) saturate(180%);
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 22px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            background: rgba(255, 255, 255, 0.10);
+
             border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+            box-shadow:
+                inset 0 0 40px rgba(255, 255, 255, 0.15),
+                0 0 60px rgba(255, 255, 255, 0.25);
+
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
         .header {
-            padding: 20px;
+            padding: 22px;
             text-align: center;
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 26px;
+            font-weight: 700;
             color: white;
-            letter-spacing: 0.5px;
+
             background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(18px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(30px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.15);
         }
 
         .settings {
-            padding: 14px;
-            backdrop-filter: blur(18px);
-            background: rgba(255, 255, 255, 0.10);
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .settings label {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             color: white;
         }
@@ -149,71 +162,80 @@ def home():
         .settings select {
             width: 100%;
             margin-top: 6px;
-            margin-bottom: 12px;
-            padding: 10px;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255, 255, 255, 0.25);
+            margin-bottom: 14px;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+
+            background: rgba(255, 255, 255, 0.20);
             color: white;
-            backdrop-filter: blur(12px);
-            font-size: 14px;
+            backdrop-filter: blur(20px);
+            font-size: 15px;
             outline: none;
         }
 
         #chat {
             flex: 1;
-            padding: 18px;
+            padding: 20px;
             overflow-y: auto;
         }
 
         .msg {
-            margin: 12px 0;
-            padding: 14px 18px;
-            border-radius: 16px;
-            max-width: 80%;
-            line-height: 1.45;
-            font-size: 15px;
-            backdrop-filter: blur(14px);
-            background: rgba(255, 255, 255, 0.25);
+            margin: 14px 0;
+            padding: 16px 20px;
+            border-radius: 18px;
+            max-width: 85%;
+            line-height: 1.5;
+            font-size: 16px;
+
+            backdrop-filter: blur(25px);
+            background: rgba(255, 255, 255, 0.22);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow:
+                inset 0 0 20px rgba(255, 255, 255, 0.2),
+                0 4px 16px rgba(0,0,0,0.25);
+
             animation: fadeIn 0.25s ease-out;
         }
 
         .user {
             align-self: flex-end;
-            background: rgba(80, 160, 255, 0.35);
+            background: rgba(120, 180, 255, 0.35);
         }
 
         .ai {
             align-self: flex-start;
-            background: rgba(255, 255, 255, 0.25);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .input-area {
             display: flex;
-            padding: 14px;
-            backdrop-filter: blur(18px);
-            background: rgba(255, 255, 255, 0.12);
-            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 16px;
+
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(255, 255, 255, 0.35);
+
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.15);
         }
 
         #msg {
             flex: 1;
-            padding: 12px 14px;
-            border-radius: 14px;
-            border: none;
-            outline: none;
-            font-size: 15px;
-            background: rgba(255, 255, 255, 0.25);
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+
+            background: rgba(255, 255, 255, 0.22);
             color: white;
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
+            font-size: 16px;
+            outline: none;
         }
 
         #msg::placeholder {
@@ -221,16 +243,17 @@ def home():
         }
 
         #send {
-            margin-left: 10px;
-            padding: 0 22px;
-            border-radius: 14px;
-            border: none;
-            cursor: pointer;
-            font-size: 15px;
+            margin-left: 12px;
+            padding: 0 26px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+
             background: rgba(255, 255, 255, 0.35);
             color: #1a1a1a;
-            backdrop-filter: blur(12px);
-            transition: 0.2s;
+            backdrop-filter: blur(20px);
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.25s;
         }
 
         #send:hover {
@@ -321,7 +344,6 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
 
 
 
