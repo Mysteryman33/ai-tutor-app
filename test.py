@@ -54,18 +54,26 @@ def ask_ai(prompt, style, mode):
         except:
             return f"Error: API returned non‑JSON response: {raw}"
 
+        # If API returned a string instead of a dict
+        if isinstance(data, str):
+            return f"API returned a string instead of JSON: {data}"
+
         # If API returned an error object
         if isinstance(data, dict) and "error" in data:
-            return f"API Error: {data['error'].get('message', 'Unknown error')}"
+            err = data["error"]
+            if isinstance(err, dict):
+                return f"API Error: {err.get('message', 'Unknown error')}"
+            else:
+                return f"API Error: {err}"
 
         # If API returned the expected structure
         if isinstance(data, dict) and "choices" in data:
             try:
                 return data["choices"][0]["message"]["content"]
-            except:
+            except Exception as e:
                 return f"Error: Unexpected model response format: {data}"
 
-        # If API returned something else entirely
+        # Anything else
         return f"Unexpected API response: {data}"
 
     except Exception as e:
@@ -227,3 +235,4 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
