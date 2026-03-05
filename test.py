@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # Load API key from environment (Render/Railway/Replit)
-HF_API_KEY = "https://ai-tutor-app-2.onrender.com"
+HF_API_KEY = "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"
 MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
 # Normal mode styles
@@ -215,5 +215,6 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
