@@ -1,12 +1,14 @@
+import os
 import requests
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-HF_API_KEY = "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"
+# Load API key from environment (Render/Railway/Replit)
+HF_API_KEY = os.getenv("HF_API_KEY")
 MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
-# Talking styles for NORMAL mode
+# Normal mode styles
 NORMAL_STYLES = {
     "friendly": "You respond warmly, casually, and with humor.",
     "professional": "You respond formally and concisely.",
@@ -14,7 +16,7 @@ NORMAL_STYLES = {
     "storyteller": "You speak dramatically, like a fantasy narrator."
 }
 
-# Talking styles for TUTOR mode
+# Tutor mode styles (no direct answers)
 TUTOR_STYLES = {
     "friendly": "You are a friendly tutor. You never give the full answer. You give hints, guiding questions, and small steps to help the student think for themselves.",
     "professional": "You are a clear and structured instructor. You avoid giving direct answers. You explain concepts, give partial steps, and help the student reason through the problem.",
@@ -46,8 +48,6 @@ def ask_ai(prompt, style, mode):
 
     try:
         r = requests.post(url, headers=headers, json=payload, timeout=30)
-        print("RAW RESPONSE:", r.text)
-
         data = r.json()
 
         if "error" in data:
@@ -65,7 +65,7 @@ def home():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>AI Chatbot</title>
+        <title>AI Tutor</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -77,7 +77,6 @@ def home():
                 align-items: center;
                 height: 100vh;
             }
-
             .chat-container {
                 width: 420px;
                 height: 650px;
@@ -88,7 +87,6 @@ def home():
                 flex-direction: column;
                 overflow: hidden;
             }
-
             .header {
                 background: #4a6cf7;
                 color: white;
@@ -97,13 +95,11 @@ def home():
                 font-size: 20px;
                 font-weight: bold;
             }
-
             #chat {
                 flex: 1;
                 padding: 15px;
                 overflow-y: auto;
             }
-
             .msg {
                 margin: 10px 0;
                 padding: 10px 14px;
@@ -111,22 +107,12 @@ def home():
                 max-width: 80%;
                 line-height: 1.4;
             }
-
-            .user {
-                background: #d1e7ff;
-                align-self: flex-end;
-            }
-
-            .ai {
-                background: #e9e9eb;
-                align-self: flex-start;
-            }
-
+            .user { background: #d1e7ff; align-self: flex-end; }
+            .ai { background: #e9e9eb; align-self: flex-start; }
             .input-area {
                 display: flex;
                 border-top: 1px solid #ddd;
             }
-
             #msg {
                 flex: 1;
                 padding: 14px;
@@ -134,7 +120,6 @@ def home():
                 outline: none;
                 font-size: 16px;
             }
-
             #send {
                 background: #4a6cf7;
                 color: white;
@@ -143,25 +128,22 @@ def home():
                 cursor: pointer;
                 font-size: 16px;
             }
-
-            #send:hover {
-                background: #3b57d6;
-            }
+            #send:hover { background: #3b57d6; }
         </style>
     </head>
     <body>
 
         <div class="chat-container">
-            <div class="header">AI Chatbot</div>
+            <div class="header">AI Tutor</div>
 
             <div style="padding: 10px; border-bottom: 1px solid #ddd;">
-                <label style="font-size: 14px; font-weight: bold;">Mode:</label>
+                <label>Mode:</label>
                 <select id="mode" style="padding: 6px; width: 100%; margin-top: 6px;">
                     <option value="normal">Normal</option>
                     <option value="tutor">Tutor (Hints Only)</option>
                 </select>
 
-                <label style="font-size: 14px; font-weight: bold; margin-top: 10px;">Talking Style:</label>
+                <label style="margin-top: 10px;">Style:</label>
                 <select id="style" style="padding: 6px; width: 100%; margin-top: 6px;">
                     <option value="friendly">Friendly</option>
                     <option value="professional">Professional</option>
@@ -197,9 +179,6 @@ def home():
                 const text = msg.value.trim();
                 if (!text) return;
 
-                const chosenStyle = style.value;
-                const chosenMode = mode.value;
-
                 addMessage(text, "user");
                 msg.value = "";
 
@@ -208,8 +187,8 @@ def home():
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({
                         message: text,
-                        style: chosenStyle,
-                        mode: chosenMode
+                        style: style.value,
+                        mode: mode.value
                     })
                 });
 
@@ -232,5 +211,7 @@ def chat():
     return jsonify({"reply": reply})
 
 
+# Required for Render/Railway hosting
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
