@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-HF_API_KEY = "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"
+HF_API_KEY = "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"
 MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
 NORMAL_STYLES = {
@@ -235,6 +235,7 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
