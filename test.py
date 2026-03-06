@@ -8,16 +8,14 @@ HF_API_KEY = HF_API_KEY = os.getenv("HF_API_KEY")
 MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
 NORMAL_STYLES = {
-    "friendly": "You respond warmly, casually, and with humor.",
-    "professional": "You respond formally and concisely.",
-    "sarcastic": "You use dry humor and light sarcasm.",
-    "storyteller": "You speak dramatically, like a fantasy narrator."
+    "friendly": "You respond as a friend, be friendly and funny, try to entertain them, don't talk iver 2 sentences.",
+    "professional": "You respond formally and concisely,answer exactly what they say, not over 2 sentences.",
+    "storyteller": "You speak dramatically, like a fantasy narrator. Used to make stories"
 }
 
 TUTOR_STYLES = {
     "friendly": "You are a friendly tutor. You never give the full answer. You give hints, guiding questions, and small steps to help the student think for themselves.",
     "professional": "You are a clear and structured instructor. You avoid giving direct answers. You explain concepts, give partial steps, and help the student reason through the problem.",
-    "sarcastic": "You use light, school‑appropriate sarcasm, but you still avoid giving answers. You give hints and nudges instead of solutions.",
     "storyteller": "You explain ideas like a storyteller or narrator, but you never reveal the full answer. You guide the student with clues and thought‑provoking steps."
 }
 
@@ -97,11 +95,11 @@ def home():
             width: 100vw;
             font-family: "Inter", Arial, sans-serif;
 
-            background: radial-gradient(circle at 20% 20%, #ffffff22, #00000055),
-                        linear-gradient(135deg, #6a11cb, #2575fc, #ff6ec4);
+            /* DARK BUT NOT TOO DARK — balanced version */
+            background: radial-gradient(circle at 20% 20%, #ffffff2a, #000000aa),
+                        linear-gradient(135deg, #4a12b8, #2a4fe0, #ff4eb8);
             background-size: 300% 300%;
             animation: gradientShift 16s ease infinite;
-
             overflow: hidden;
         }
 
@@ -111,102 +109,136 @@ def home():
             100% { background-position: 0% 50%; }
         }
 
+        /* MAIN GLASS CHAT BOX */
         .chat-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-
-            backdrop-filter: blur(40px) saturate(200%);
-            -webkit-backdrop-filter: blur(40px) saturate(200%);
-            background: rgba(255, 255, 255, 0.10);
-
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow:
-                inset 0 0 40px rgba(255, 255, 255, 0.15),
-                0 0 60px rgba(255, 255, 255, 0.25);
-
+            inset: 0;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+
+            margin: auto;
+            width: 80%;
+            max-width: 900px;
+            height: 90%;
+
+            backdrop-filter: blur(40px) saturate(200%);
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.32);
+
+            box-shadow:
+                0 0 55px rgba(255, 255, 255, 0.22),
+                inset 0 0 35px rgba(255, 255, 255, 0.14);
         }
 
         .header {
-            padding: 22px;
+            padding: 20px;
             text-align: center;
             font-size: 26px;
             font-weight: 700;
             color: white;
-
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(30px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.10);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 28px 28px 0 0;
         }
 
+        /* SETTINGS */
         .settings {
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            width: 200px;
         }
 
         .settings label {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: white;
+            margin-bottom: 6px;
         }
 
         .settings select {
-            width: 100%;
-            margin-top: 6px;
-            margin-bottom: 14px;
-            padding: 12px;
+            appearance: none;
+            padding: 14px;
             border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-
+            border: 1px solid rgba(255, 255, 255, 0.32);
             background: rgba(255, 255, 255, 0.20);
             color: white;
-            backdrop-filter: blur(20px);
-            font-size: 15px;
+            font-size: 16px;
             outline: none;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+
+            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 18px;
         }
 
+        /* CHAT AREA */
         #chat {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
 
         .msg {
-            margin: 14px 0;
             padding: 16px 20px;
             border-radius: 18px;
-            max-width: 85%;
+            max-width: 70%;
             line-height: 1.5;
-            font-size: 16px;
-
-            backdrop-filter: blur(25px);
-            background: rgba(255, 255, 255, 0.22);
+            font-size: 17px;
             color: white;
 
-            border: 1px solid rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.40);
+            backdrop-filter: blur(25px);
+
             box-shadow:
-                inset 0 0 20px rgba(255, 255, 255, 0.2),
-                0 4px 16px rgba(0,0,0,0.25);
+                inset 0 0 18px rgba(255, 255, 255, 0.18),
+                0 4px 14px rgba(0,0,0,0.25);
 
             animation: fadeIn 0.25s ease-out;
+
+            display: flex;
+            flex-direction: column;
         }
 
-        .user {
+        .msg.user {
             align-self: flex-end;
-            background: rgba(120, 180, 255, 0.35);
+            background: rgba(120, 180, 255, 0.38);
         }
 
-        .ai {
+        .msg.ai {
             align-self: flex-start;
+        }
+
+        /* FIXED TIMESTAMP */
+        .timestamp {
+            font-size: 12px;
+            opacity: 0.75;
+            color: #eaeaea;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .msg.user .timestamp {
+            text-align: right;
+        }
+
+        .msg.ai .timestamp {
+            text-align: left;
         }
 
         @keyframes fadeIn {
@@ -214,79 +246,88 @@ def home():
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* INPUT AREA */
         .input-area {
             display: flex;
-            padding: 16px;
+            justify-content: center;
+            padding: 22px 0;
+            background: rgba(255, 255, 255, 0.09);
+            border-top: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 0 0 28px 28px;
+        }
 
-            background: rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(30px);
-            border-top: 1px solid rgba(255, 255, 255, 0.35);
-
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.15);
+        .input-wrapper {
+            display: flex;
+            width: 60%;
+            max-width: 600px;
+            gap: 14px;
         }
 
         #msg {
             flex: 1;
-            padding: 14px 16px;
+            padding: 16px;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-
-            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.20);
             color: white;
-            backdrop-filter: blur(20px);
-            font-size: 16px;
             outline: none;
+            font-size: 19px;
         }
 
         #msg::placeholder {
             color: rgba(255, 255, 255, 0.7);
+            font-size: 19px;
         }
 
         #send {
-            margin-left: 12px;
             padding: 0 26px;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.45);
-
-            background: rgba(255, 255, 255, 0.35);
-            color: #1a1a1a;
-            backdrop-filter: blur(20px);
-            font-size: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.40);
+            background: rgba(255, 255, 255, 0.30);
+            color: white; /* ← UPDATED */
             cursor: pointer;
             transition: 0.25s;
+            font-size: 18px;
         }
 
         #send:hover {
-            background: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.50);
+            color: white; /* ← stays white */
         }
     </style>
 </head>
-<body>
 
+<body>
     <div class="chat-container">
         <div class="header">AI Tutor</div>
 
         <div class="settings">
-            <label>Mode:</label>
-            <select id="mode">
-                <option value="normal">Normal</option>
-                <option value="tutor">Tutor (Hints Only)</option>
-            </select>
+            <div class="settings-group">
+                <label>Mode:</label>
+                <select id="mode">
+                    <option value="normal">Normal</option>
+                    <option value="tutor">Tutor (Hints Only)</option>
+                </select>
+            </div>
 
-            <label>Style:</label>
-            <select id="style">
-                <option value="friendly">Friendly</option>
-                <option value="professional">Professional</option>
-                <option value="sarcastic">Sarcastic</option>
-                <option value="storyteller">Storyteller</option>
-            </select>
+            <div class="settings-group">
+                <label>Style:</label>
+                <select id="style">
+                    <option value="friendly">Friendly</option>
+                    <option value="professional">Professional</option>
+                    <option value="sarcastic">Sarcastic</option>
+                    <option value="storyteller">Storyteller</option>
+                </select>
+            </div>
         </div>
 
         <div id="chat"></div>
 
         <div class="input-area">
-            <input id="msg" placeholder="Type your message...">
-            <button id="send">Send</button>
+            <div class="input-wrapper">
+                <input id="msg" placeholder="Type your message...">
+                <button id="send">Send</button>
+            </div>
         </div>
     </div>
 
@@ -297,15 +338,30 @@ def home():
         const style = document.getElementById("style");
         const mode = document.getElementById("mode");
 
+        function timestamp() {
+            const d = new Date();
+            return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        }
+
         function addMessage(text, sender) {
             const div = document.createElement("div");
             div.className = "msg " + sender;
-            div.innerText = text;
+
+            const content = document.createElement("div");
+            content.innerText = text;
+
+            const time = document.createElement("div");
+            time.className = "timestamp";
+            time.innerText = timestamp();
+
+            div.appendChild(content);
+            div.appendChild(time);
+
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
         }
 
-        send.onclick = async () => {
+        async function sendMessage() {
             const text = msg.value.trim();
             if (!text) return;
 
@@ -324,11 +380,21 @@ def home():
 
             const data = await response.json();
             addMessage(data.reply, "ai");
-        };
-    </script>
+        }
 
+        send.onclick = sendMessage;
+
+        msg.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
 </body>
 </html>
+
+
     """
 
 
@@ -344,7 +410,6 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
 
 
 
