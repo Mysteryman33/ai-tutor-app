@@ -86,7 +86,7 @@ def home():
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Tutor</title>
+    <title>ACE Tutor</title>
 
     <!-- Import Anton font -->
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
@@ -317,7 +317,7 @@ def home():
 
 <body>
     <div class="chat-container">
-        <div class="header">AI Tutor</div>
+        <div class="header">ACE Tutor</div>
 
         <div class="settings">
             <div class="settings-group">
@@ -433,6 +433,7 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
