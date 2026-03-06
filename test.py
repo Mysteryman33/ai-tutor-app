@@ -8,9 +8,9 @@ HF_API_KEY = HF_API_KEY = os.getenv("HF_API_KEY")
 MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
 NORMAL_STYLES = {
-    "friendly": "You respond as a friend, be friendly and funny, try to entertain them, don't talk iver 2 sentences.",
-    "professional": "You respond formally and concisely,answer exactly what they say, not over 2 sentences.",
-    "storyteller": "You speak dramatically, like a fantasy narrator. Used to make stories"
+    "friendly": "In this mode and style, respond in a warm, supportive, and conversational tone. You may give the final answer and explain it clearly, but do so in a way that feels approachable and encouraging. Use simple language when possible and make the user feel comfortable asking questions. Be positive, motivating, and helpful while still ensuring the explanation is accurate and useful.",
+    "professional": "In this mode and style, respond with a clear, structured, and academic tone. Provide direct answers along with concise explanations when appropriate. Focus on accuracy, logic, and clarity, similar to a knowledgeable teacher or expert explaining a concept. Avoid slang, jokes, or overly casual language. Organize explanations logically and keep responses professional, informative, and easy to understand.",
+    "storyteller": "In this mode and style, you may provide the final answer but explain concepts through engaging narratives, analogies, or imaginative scenarios. Present information in a way that feels like a short story or vivid explanation that helps the user visualize the concept. The response should still be educational and accurate, but the tone should feel engaging, descriptive, and memorable."
 }
 
 TUTOR_STYLES = {
@@ -87,6 +87,10 @@ def home():
 <html>
 <head>
     <title>AI Tutor</title>
+
+    <!-- Import Anton font -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+
     <style>
         body {
             margin: 0;
@@ -95,7 +99,7 @@ def home():
             width: 100vw;
             font-family: "Inter", Arial, sans-serif;
 
-            /* DARK BUT NOT TOO DARK — balanced version */
+            /* Balanced dark background */
             background: radial-gradient(circle at 20% 20%, #ffffff2a, #000000aa),
                         linear-gradient(135deg, #4a12b8, #2a4fe0, #ff4eb8);
             background-size: 300% 300%;
@@ -127,8 +131,8 @@ def home():
             border: 1px solid rgba(255, 255, 255, 0.32);
 
             box-shadow:
-                0 0 55px rgba(255, 255, 255, 0.22),
-                inset 0 0 35px rgba(255, 255, 255, 0.14);
+                0 0 45px rgba(255, 255, 255, 0.18),
+                inset 0 0 30px rgba(255, 255, 255, 0.12);
         }
 
         .header {
@@ -193,6 +197,23 @@ def home():
             gap: 18px;
         }
 
+        /* INTRO TEXT (not a bubble) */
+        .intro-text {
+            font-family: 'Anton', sans-serif;
+            font-size: 38px;
+            letter-spacing: 0.5px;
+            color: white;
+            opacity: 0;
+            animation: fadeInIntro 0.8s ease forwards;
+            margin-bottom: 18px;
+            margin-left: 6px;
+        }
+
+        @keyframes fadeInIntro {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .msg {
             padding: 16px 20px;
             border-radius: 18px;
@@ -224,7 +245,7 @@ def home():
             align-self: flex-start;
         }
 
-        /* FIXED TIMESTAMP */
+        /* TIMESTAMP */
         .timestamp {
             font-size: 12px;
             opacity: 0.75;
@@ -233,13 +254,8 @@ def home():
             display: block;
         }
 
-        .msg.user .timestamp {
-            text-align: right;
-        }
-
-        .msg.ai .timestamp {
-            text-align: left;
-        }
+        .msg.user .timestamp { text-align: right; }
+        .msg.ai .timestamp { text-align: left; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
@@ -279,20 +295,22 @@ def home():
             font-size: 19px;
         }
 
+        /* SEND BUTTON — white text + very soft glow */
         #send {
             padding: 0 26px;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.40);
-            background: rgba(255, 255, 255, 0.30);
-            color: white; /* ← UPDATED */
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.28);
+            color: white;
             cursor: pointer;
             transition: 0.25s;
             font-size: 18px;
         }
 
         #send:hover {
-            background: rgba(255, 255, 255, 0.50);
-            color: white; /* ← stays white */
+            background: rgba(255, 255, 255, 0.40);
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.30),
+                        0 0 6px rgba(255, 255, 255, 0.18);
         }
     </style>
 </head>
@@ -321,7 +339,10 @@ def home():
             </div>
         </div>
 
-        <div id="chat"></div>
+        <div id="chat">
+            <!-- INTRO TEXT (not a bubble) -->
+            <div class="intro-text">Hey, what can I help with today?</div>
+        </div>
 
         <div class="input-area">
             <div class="input-wrapper">
@@ -395,6 +416,8 @@ def home():
 </html>
 
 
+
+
     """
 
 
@@ -410,7 +433,6 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
 
 
 
