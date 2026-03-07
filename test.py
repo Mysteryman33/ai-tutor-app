@@ -142,16 +142,43 @@ def home():
 
         .header {
             padding: 20px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
             font-size: 26px;
             font-weight: 700;
             color: white;
             background: rgba(255, 255, 255, 0.10);
             border-bottom: 1px solid rgba(255, 255, 255, 0.22);
             border-radius: 28px 28px 0 0;
+            position: relative;
         }
 
-        /* SETTINGS */
+        .header-title {
+            pointer-events: none;
+        }
+
+        /* three-dot menu button (desktop hidden, mobile shown via media query) */
+        #menuBtn {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: none; /* mobile only */
+        }
+
+        #menuBtn svg {
+            width: 22px;
+            height: 22px;
+            stroke: white;
+        }
+
+        /* SETTINGS (desktop visible) */
         .settings {
             padding: 16px 20px;
             background: rgba(255, 255, 255, 0.07);
@@ -168,13 +195,12 @@ def home():
         }
 
         .settings label {
-            font-size: 16px; /* prevent zoom */
+            font-size: 16px;
             font-weight: 600;
             color: white;
             margin-bottom: 6px;
         }
 
-        /* FIXED, CLEAN, EDGE-PROOF DROPDOWNS */
         .settings select {
             appearance: none;
             -webkit-appearance: none;
@@ -188,7 +214,7 @@ def home():
             background-clip: padding-box;
 
             color: white;
-            font-size: 16px; /* prevent zoom */
+            font-size: 16px;
             cursor: pointer;
             backdrop-filter: blur(18px);
 
@@ -220,6 +246,11 @@ def home():
             animation: fadeInIntro 0.8s ease forwards;
         }
 
+        @keyframes fadeInIntro {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .msg {
             padding: 16px 20px;
             border-radius: 18px;
@@ -237,7 +268,13 @@ def home():
             background: rgba(120, 180, 255, 0.38);
         }
 
-        /* INPUT BAR */
+        .timestamp {
+            font-size: 12px;
+            opacity: 0.75;
+            margin-top: 10px;
+        }
+
+        /* INPUT BAR (desktop) */
         .input-area {
             width: 80%;
             max-width: 900px;
@@ -255,12 +292,12 @@ def home():
 
         #msg {
             flex: 1;
-            padding: 16px; /* >=16px prevents zoom */
+            padding: 16px;
             border-radius: 14px;
             border: none;
             background: rgba(255, 255, 255, 0.22);
             color: white !important;
-            font-size: 16px; /* prevent zoom */
+            font-size: 16px;
             backdrop-filter: blur(20px);
         }
 
@@ -275,7 +312,6 @@ def home():
             background: rgba(255, 255, 255, 0.28);
         }
 
-        /* SEND BUTTON */
         #send {
             width: 48px;
             height: 48px;
@@ -299,64 +335,199 @@ def home():
             height: 22px;
         }
 
-        /* 📱 MOBILE FIXES */
+        #send:hover {
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        .disclaimer {
+            margin-top: 6px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 13px;
+        }
+
+        /* Bottom sheet overlay + sheet (hidden by default) */
+        #sheetOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 20;
+        }
+
+        #settingsSheet {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: -60%;
+            height: 40%;
+            max-height: 320px;
+            background: rgba(20, 20, 30, 0.96);
+            backdrop-filter: blur(24px);
+            border-radius: 18px 18px 0 0;
+            padding: 16px 18px 20px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+            transition: transform 0.25s ease;
+            transform: translateY(100%);
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        #settingsSheet.active {
+            transform: translateY(0);
+        }
+
+        #sheetOverlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.35);
+            margin: 0 auto 10px;
+        }
+
+        .sheet-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .sheet-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sheet-row label {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+        }
+
+        .sheet-row select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            padding: 12px 36px 12px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background-color: rgba(255, 255, 255, 0.16);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(18px);
+
+            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+
+        .sheet-close {
+            margin-top: auto;
+            align-self: flex-end;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: none;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* 📱 MOBILE COPILOT LAYOUT */
         @media (max-width: 600px) {
 
+            body {
+                overflow: hidden;
+            }
+
             .chat-container {
-                width: 95%;
-                height: 58vh;
-                border-radius: 20px;
+                width: 100%;
+                max-width: 100%;
+                height: calc(100vh - 120px);
+                margin-top: 0;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+
+            .header {
+                font-size: 16px;
+                padding: 10px 12px;
+                justify-content: center;
+                border-radius: 0;
+                background: transparent;
+                border-bottom: none;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            #menuBtn {
+                display: block;
             }
 
             .settings {
-                flex-direction: column;
-                gap: 10px;
-                padding: 12px;
-            }
-
-            .settings-group {
-                width: 100%;
-            }
-
-            .settings select {
-                width: 100%;
-                font-size: 16px;
-                padding: 14px;
+                display: none; /* hide desktop settings bar */
             }
 
             #chat {
-                padding: 16px;
-                gap: 14px;
+                padding: 12px 14px 80px;
+                gap: 12px;
             }
 
             .msg {
+                max-width: 88%;
                 font-size: 16px;
-                padding: 14px 16px;
-                max-width: 85%;
+                padding: 12px 14px;
             }
 
             .input-area {
-                width: 95%;
-                margin-top: 20px;
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                max-width: 100%;
+                margin-top: 0;
+                padding: 10px 10px 18px;
+                background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+                z-index: 25;
             }
 
             .input-wrapper {
-                max-width: 100%;
+                max-width: 900px;
+                margin: 0 auto;
+                gap: 8px;
             }
 
             #msg {
+                border-radius: 999px;
+                padding: 14px 16px;
                 font-size: 16px;
-                padding: 16px;
             }
 
             #send {
-                width: 50px;
-                height: 50px;
+                width: 46px;
+                height: 46px;
             }
 
             #send svg {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
+            }
+
+            .disclaimer {
+                display: none;
             }
         }
     </style>
@@ -365,7 +536,16 @@ def home():
 <body>
 
     <div class="chat-container">
-        <div class="header">ACE Tutor</div>
+        <div class="header">
+            <div class="header-title">ACE Tutor</div>
+            <button id="menuBtn" aria-label="Settings">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="5" cy="12" r="1.6" fill="white"/>
+                    <circle cx="12" cy="12" r="1.6" fill="white"/>
+                    <circle cx="19" cy="12" r="1.6" fill="white"/>
+                </svg>
+            </button>
+        </div>
 
         <div class="settings">
             <div class="settings-group">
@@ -404,12 +584,49 @@ def home():
         </div>
     </div>
 
+    <div class="disclaimer">ACE Tutor can make mistakes. Check important info.</div>
+
+    <!-- Bottom sheet + overlay -->
+    <div id="sheetOverlay"></div>
+
+    <div id="settingsSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Settings</div>
+
+        <div class="sheet-row">
+            <label for="modeSheet">Mode</label>
+            <select id="modeSheet">
+                <option value="normal">Normal</option>
+                <option value="tutor">Tutor (Hints Only)</option>
+            </select>
+        </div>
+
+        <div class="sheet-row">
+            <label for="styleSheet">Style</label>
+            <select id="styleSheet">
+                <option value="friendly">Friendly</option>
+                <option value="professional">Professional</option>
+                <option value="sarcastic">Sarcastic</option>
+                <option value="storyteller">Storyteller</option>
+            </select>
+        </div>
+
+        <button class="sheet-close" id="sheetClose">Close</button>
+    </div>
+
     <script>
         const chat = document.getElementById("chat");
         const msg = document.getElementById("msg");
         const send = document.getElementById("send");
         const style = document.getElementById("style");
         const mode = document.getElementById("mode");
+
+        const modeSheet = document.getElementById("modeSheet");
+        const styleSheet = document.getElementById("styleSheet");
+        const menuBtn = document.getElementById("menuBtn");
+        const sheetOverlay = document.getElementById("sheetOverlay");
+        const settingsSheet = document.getElementById("settingsSheet");
+        const sheetClose = document.getElementById("sheetClose");
 
         function timestamp() {
             const d = new Date();
@@ -476,11 +693,40 @@ def home():
                 send.style.pointerEvents = "none";
             }
         });
+
+        /* sync bottom sheet selects with desktop selects */
+        function syncSheetFromMain() {
+            modeSheet.value = mode.value;
+            styleSheet.value = style.value;
+        }
+
+        function syncMainFromSheet() {
+            mode.value = modeSheet.value;
+            style.value = styleSheet.value;
+        }
+
+        modeSheet.addEventListener("change", syncMainFromSheet);
+        styleSheet.addEventListener("change", syncMainFromSheet);
+
+        /* bottom sheet open/close */
+        function openSheet() {
+            syncSheetFromMain();
+            sheetOverlay.classList.add("active");
+            settingsSheet.classList.add("active");
+        }
+
+        function closeSheet() {
+            sheetOverlay.classList.remove("active");
+            settingsSheet.classList.remove("active");
+        }
+
+        menuBtn.addEventListener("click", openSheet);
+        sheetClose.addEventListener("click", closeSheet);
+        sheetOverlay.addEventListener("click", closeSheet);
     </script>
 
 </body>
 </html>
-
 
 
     """
@@ -498,6 +744,7 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
