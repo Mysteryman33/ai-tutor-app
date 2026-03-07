@@ -88,8 +88,7 @@ def home():
 <head>
     <title>ACE Tutor</title>
 
-    <!-- Import Anton font -->
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -99,11 +98,15 @@ def home():
             width: 100vw;
             font-family: "Inter", Arial, sans-serif;
 
-            /* Balanced dark background */
             background: radial-gradient(circle at 20% 20%, #ffffff2a, #000000aa),
                         linear-gradient(135deg, #4a12b8, #2a4fe0, #ff4eb8);
             background-size: 300% 300%;
             animation: gradientShift 16s ease infinite;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
             overflow: hidden;
         }
 
@@ -113,17 +116,14 @@ def home():
             100% { background-position: 0% 50%; }
         }
 
-        /* MAIN GLASS CHAT BOX */
+        /* CHAT BOX */
         .chat-container {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-
-            margin: auto;
             width: 80%;
             max-width: 900px;
-            height: 90%;
+            height: 65vh;
+
+            display: flex;
+            flex-direction: column;
 
             backdrop-filter: blur(40px) saturate(200%);
             background: rgba(255, 255, 255, 0.12);
@@ -133,6 +133,9 @@ def home():
             box-shadow:
                 0 0 45px rgba(255, 255, 255, 0.18),
                 inset 0 0 30px rgba(255, 255, 255, 0.12);
+
+            overflow: hidden;
+            margin-top: 40px;
         }
 
         .header {
@@ -169,44 +172,64 @@ def home():
             margin-bottom: 6px;
         }
 
+        /* FIXED, CLEAN, EDGE-PROOF DROPDOWNS */
         .settings select {
             appearance: none;
-            padding: 14px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.32);
-            background: rgba(255, 255, 255, 0.20);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            padding: 12px 40px 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+
+            background-color: rgba(255, 255, 255, 0.22);
+            background-clip: padding-box;
+
             color: white;
-            font-size: 16px;
-            outline: none;
+            font-size: 15px;
+            line-height: 1.2;
             cursor: pointer;
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(18px);
 
             background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
             background-repeat: no-repeat;
-            background-position: right 14px center;
+            background-position: right 12px center;
             background-size: 18px;
+        }
+
+        /* Remove native Edge arrow */
+        .settings select::-ms-expand {
+            display: none;
+        }
+
+        .settings select:hover {
+            background-color: rgba(255, 255, 255, 0.30);
         }
 
         /* CHAT AREA */
         #chat {
             flex: 1;
-            padding: 30px;
+            padding: 24px 30px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 18px;
         }
 
-        /* INTRO TEXT (not a bubble) */
+        #chat::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+        }
+
         .intro-text {
-            font-family: 'Anton', sans-serif;
-            font-size: 38px;
-            letter-spacing: 0.5px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 42px;
             color: white;
             opacity: 0;
             animation: fadeInIntro 0.8s ease forwards;
-            margin-bottom: 18px;
-            margin-left: 6px;
         }
 
         @keyframes fadeInIntro {
@@ -218,7 +241,6 @@ def home():
             padding: 16px 20px;
             border-radius: 18px;
             max-width: 70%;
-            line-height: 1.5;
             font-size: 17px;
             color: white;
 
@@ -231,9 +253,6 @@ def home():
                 0 4px 14px rgba(0,0,0,0.25);
 
             animation: fadeIn 0.25s ease-out;
-
-            display: flex;
-            flex-direction: column;
         }
 
         .msg.user {
@@ -241,81 +260,94 @@ def home():
             background: rgba(120, 180, 255, 0.38);
         }
 
-        .msg.ai {
-            align-self: flex-start;
-        }
-
-        /* TIMESTAMP */
         .timestamp {
             font-size: 12px;
             opacity: 0.75;
-            color: #eaeaea;
             margin-top: 10px;
-            display: block;
         }
-
-        .msg.user .timestamp { text-align: right; }
-        .msg.ai .timestamp { text-align: left; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* INPUT AREA */
+        /* INPUT BAR OUTSIDE */
         .input-area {
+            width: 80%;
+            max-width: 900px;
+            margin-top: 50px;
             display: flex;
             justify-content: center;
-            padding: 22px 0;
-            background: rgba(255, 255, 255, 0.09);
-            border-top: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 0 0 28px 28px;
         }
 
         .input-wrapper {
             display: flex;
-            width: 60%;
-            max-width: 600px;
-            gap: 14px;
+            width: 100%;
+            max-width: 650px;
+            gap: 12px;
         }
 
         #msg {
             flex: 1;
-            padding: 16px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.32);
-            background: rgba(255, 255, 255, 0.20);
-            color: white;
-            outline: none;
-            font-size: 19px;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            background: rgba(255, 255, 255, 0.22);
+            color: white !important;
+            font-size: 17px;
+            backdrop-filter: blur(20px);
         }
 
+        /* Pure white placeholder */
         #msg::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 19px;
+            color: rgba(255, 255, 255, 1) !important;
+            opacity: 1 !important;
         }
 
-        /* SEND BUTTON — white text + very soft glow */
-        #send {
-            padding: 0 26px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
+        /* Remove highlight on focus */
+        #msg:focus {
+            outline: none !important;
+            box-shadow: none !important;
             background: rgba(255, 255, 255, 0.28);
-            color: white;
+        }
+
+        /* CIRCULAR SVG SEND BUTTON */
+        #send {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.30);
             cursor: pointer;
-            transition: 0.25s;
-            font-size: 18px;
+            backdrop-filter: blur(20px);
+
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, background 0.25s ease;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #send:hover {
-            background: rgba(255, 255, 255, 0.40);
-            box-shadow: 0 0 3px rgba(255, 255, 255, 0.30),
-                        0 0 6px rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        #send svg {
+            pointer-events: none;
+        }
+
+        .disclaimer {
+            margin-top: 6px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 13px;
         }
     </style>
 </head>
 
 <body>
+
     <div class="chat-container">
         <div class="header">ACE Tutor</div>
 
@@ -340,17 +372,24 @@ def home():
         </div>
 
         <div id="chat">
-            <!-- INTRO TEXT (not a bubble) -->
             <div class="intro-text">Hey, what can I help with today?</div>
         </div>
+    </div>
 
-        <div class="input-area">
-            <div class="input-wrapper">
-                <input id="msg" placeholder="Type your message...">
-                <button id="send">Send</button>
-            </div>
+    <!-- INPUT BAR OUTSIDE -->
+    <div class="input-area">
+        <div class="input-wrapper">
+            <input id="msg" placeholder="Type your message...">
+
+            <button id="send">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
     </div>
+
+    <div class="disclaimer">ACE Tutor can make mistakes. Check important info.</div>
 
     <script>
         const chat = document.getElementById("chat");
@@ -369,7 +408,7 @@ def home():
             div.className = "msg " + sender;
 
             const content = document.createElement("div");
-            content.innerText = text;
+            content.innerHTML = text;
 
             const time = document.createElement("div");
             time.className = "timestamp";
@@ -388,6 +427,9 @@ def home():
 
             addMessage(text, "user");
             msg.value = "";
+
+            send.style.opacity = "0";
+            send.style.pointerEvents = "none";
 
             const response = await fetch("/chat", {
                 method: "POST",
@@ -411,9 +453,27 @@ def home():
                 sendMessage();
             }
         });
+
+        /* SHOW SEND BUTTON ONLY WHEN TYPING */
+        msg.addEventListener("input", () => {
+            if (msg.value.trim().length > 0) {
+                send.style.opacity = "1";
+                send.style.pointerEvents = "auto";
+            } else {
+                send.style.opacity = "0";
+                send.style.pointerEvents = "none";
+            }
+        });
     </script>
+
 </body>
 </html>
+
+
+
+
+
+
 
 
 
@@ -433,7 +493,6 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
 
 
 
