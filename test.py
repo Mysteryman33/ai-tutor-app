@@ -88,16 +88,20 @@ def home():
 <head>
     <title>ACE Tutor</title>
 
+    <!-- Prevent weird zooming on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
             font-family: "Inter", Arial, sans-serif;
 
             background: radial-gradient(circle at 20% 20%, #ffffff2a, #000000aa),
@@ -118,7 +122,7 @@ def home():
             100% { background-position: 0% 50%; }
         }
 
-        /* CHAT BOX */
+        /* CHAT BOX (desktop) */
         .chat-container {
             width: 80%;
             max-width: 900px;
@@ -160,7 +164,7 @@ def home():
             pointer-events: none;
         }
 
-        /* three-dot menu button (desktop hidden, mobile shown via media query) */
+        /* three-dot menu (desktop hidden, mobile shown) */
         #menuBtn {
             position: absolute;
             right: 18px;
@@ -169,7 +173,7 @@ def home():
             background: transparent;
             border: none;
             cursor: pointer;
-            display: none; /* mobile only */
+            display: none;
         }
 
         #menuBtn svg {
@@ -178,7 +182,7 @@ def home():
             stroke: white;
         }
 
-        /* SETTINGS (desktop visible) */
+        /* SETTINGS (desktop) */
         .settings {
             padding: 16px 20px;
             background: rgba(255, 255, 255, 0.07);
@@ -345,7 +349,7 @@ def home():
             font-size: 13px;
         }
 
-        /* Bottom sheet overlay + sheet (hidden by default) */
+        /* Bottom sheet overlay + sheet */
         #sheetOverlay {
             position: fixed;
             inset: 0;
@@ -360,7 +364,7 @@ def home():
             position: fixed;
             left: 0;
             right: 0;
-            bottom: -60%;
+            bottom: 0;
             height: 40%;
             max-height: 320px;
             background: rgba(20, 20, 30, 0.96);
@@ -446,17 +450,19 @@ def home():
         @media (max-width: 600px) {
 
             body {
-                overflow: hidden;
+                overflow: auto; /* fix funky scrolling */
             }
 
             .chat-container {
                 width: 100%;
                 max-width: 100%;
-                height: calc(100vh - 120px);
+                height: calc(100vh - 80px);
                 margin-top: 0;
                 border-radius: 0;
                 border-left: none;
                 border-right: none;
+                background: transparent;
+                box-shadow: none;
             }
 
             .header {
@@ -481,8 +487,9 @@ def home():
             }
 
             #chat {
-                padding: 12px 14px 80px;
+                padding: 12px 14px 90px;
                 gap: 12px;
+                background: transparent;
             }
 
             .msg {
@@ -491,6 +498,7 @@ def home():
                 padding: 12px 14px;
             }
 
+            /* FLOATING INPUT BAR, NO BOX BEHIND */
             .input-area {
                 position: fixed;
                 left: 0;
@@ -499,8 +507,8 @@ def home():
                 width: 100%;
                 max-width: 100%;
                 margin-top: 0;
-                padding: 10px 10px 18px;
-                background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+                padding: 10px 10px 16px;
+                background: transparent; /* remove box behind */
                 z-index: 25;
             }
 
@@ -514,11 +522,13 @@ def home():
                 border-radius: 999px;
                 padding: 14px 16px;
                 font-size: 16px;
+                background: rgba(0, 0, 0, 0.35);
             }
 
             #send {
                 width: 46px;
                 height: 46px;
+                background: rgba(255, 255, 255, 0.30);
             }
 
             #send svg {
@@ -694,7 +704,7 @@ def home():
             }
         });
 
-        /* sync bottom sheet selects with desktop selects */
+        /* sync sheet selects with main selects */
         function syncSheetFromMain() {
             modeSheet.value = mode.value;
             styleSheet.value = style.value;
@@ -729,6 +739,7 @@ def home():
 </html>
 
 
+
     """
 
 
@@ -744,6 +755,7 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
