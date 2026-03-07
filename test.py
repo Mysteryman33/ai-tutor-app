@@ -88,6 +88,8 @@ def home():
 <head>
     <title>ACE Tutor</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 
     <style>
@@ -166,7 +168,7 @@ def home():
         }
 
         .settings label {
-            font-size: 14px;
+            font-size: 16px; /* prevent zoom */
             font-weight: 600;
             color: white;
             margin-bottom: 6px;
@@ -178,7 +180,7 @@ def home():
             -webkit-appearance: none;
             -moz-appearance: none;
 
-            padding: 12px 40px 12px 14px;
+            padding: 14px 40px 14px 14px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.35);
 
@@ -186,8 +188,7 @@ def home():
             background-clip: padding-box;
 
             color: white;
-            font-size: 15px;
-            line-height: 1.2;
+            font-size: 16px; /* prevent zoom */
             cursor: pointer;
             backdrop-filter: blur(18px);
 
@@ -201,10 +202,6 @@ def home():
             display: none;
         }
 
-        .settings select:hover {
-            background-color: rgba(255, 255, 255, 0.30);
-        }
-
         /* CHAT AREA */
         #chat {
             flex: 1;
@@ -215,25 +212,12 @@ def home():
             gap: 18px;
         }
 
-        #chat::-webkit-scrollbar {
-            width: 6px;
-        }
-        #chat::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.35);
-            border-radius: 10px;
-        }
-
         .intro-text {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 42px;
             color: white;
             opacity: 0;
             animation: fadeInIntro 0.8s ease forwards;
-        }
-
-        @keyframes fadeInIntro {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .msg {
@@ -246,12 +230,6 @@ def home():
             background: rgba(255, 255, 255, 0.22);
             border: 1px solid rgba(255, 255, 255, 0.40);
             backdrop-filter: blur(25px);
-
-            box-shadow:
-                inset 0 0 18px rgba(255, 255, 255, 0.18),
-                0 4px 14px rgba(0,0,0,0.25);
-
-            animation: fadeIn 0.25s ease-out;
         }
 
         .msg.user {
@@ -259,17 +237,11 @@ def home():
             background: rgba(120, 180, 255, 0.38);
         }
 
-        .timestamp {
-            font-size: 12px;
-            opacity: 0.75;
-            margin-top: 10px;
-        }
-
-        /* INPUT BAR OUTSIDE */
+        /* INPUT BAR */
         .input-area {
             width: 80%;
             max-width: 900px;
-            margin-top: 50px;
+            margin-top: 40px;
             display: flex;
             justify-content: center;
         }
@@ -283,12 +255,12 @@ def home():
 
         #msg {
             flex: 1;
-            padding: 14px;
+            padding: 16px; /* >=16px prevents zoom */
             border-radius: 14px;
             border: none;
             background: rgba(255, 255, 255, 0.22);
             color: white !important;
-            font-size: 17px;
+            font-size: 16px; /* prevent zoom */
             backdrop-filter: blur(20px);
         }
 
@@ -305,8 +277,8 @@ def home():
 
         /* SEND BUTTON */
         #send {
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border: none;
             background: rgba(255, 255, 255, 0.30);
@@ -322,18 +294,9 @@ def home():
             justify-content: center;
         }
 
-        #send:hover {
-            background: rgba(255, 255, 255, 0.45);
-        }
-
         #send svg {
-            pointer-events: none;
-        }
-
-        .disclaimer {
-            margin-top: 6px;
-            color: rgba(255, 255, 255, 0.75);
-            font-size: 13px;
+            width: 22px;
+            height: 22px;
         }
 
         /* 📱 MOBILE FIXES */
@@ -341,18 +304,13 @@ def home():
 
             .chat-container {
                 width: 95%;
-                height: 60vh;
+                height: 58vh;
                 border-radius: 20px;
-            }
-
-            .header {
-                font-size: 20px;
-                padding: 14px;
             }
 
             .settings {
                 flex-direction: column;
-                gap: 12px;
+                gap: 10px;
                 padding: 12px;
             }
 
@@ -362,8 +320,8 @@ def home():
 
             .settings select {
                 width: 100%;
-                font-size: 14px;
-                padding: 10px 36px 10px 12px;
+                font-size: 16px;
+                padding: 14px;
             }
 
             #chat {
@@ -372,14 +330,14 @@ def home():
             }
 
             .msg {
-                font-size: 15px;
+                font-size: 16px;
                 padding: 14px 16px;
                 max-width: 85%;
             }
 
             .input-area {
                 width: 95%;
-                margin-top: 30px;
+                margin-top: 20px;
             }
 
             .input-wrapper {
@@ -388,17 +346,17 @@ def home():
 
             #msg {
                 font-size: 16px;
-                padding: 12px;
+                padding: 16px;
             }
 
             #send {
-                width: 42px;
-                height: 42px;
+                width: 50px;
+                height: 50px;
             }
 
             #send svg {
-                width: 20px;
-                height: 20px;
+                width: 24px;
+                height: 24px;
             }
         }
     </style>
@@ -439,14 +397,12 @@ def home():
             <input id="msg" placeholder="Type your message...">
 
             <button id="send">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <svg viewBox="0 0 24 24" fill="none">
                     <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
         </div>
     </div>
-
-    <div class="disclaimer">ACE Tutor can make mistakes. Check important info.</div>
 
     <script>
         const chat = document.getElementById("chat");
@@ -527,13 +483,6 @@ def home():
 
 
 
-
-
-
-
-
-
-
     """
 
 
@@ -549,6 +498,7 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
