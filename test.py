@@ -197,7 +197,6 @@ def home():
             background-size: 18px;
         }
 
-        /* Remove native Edge arrow */
         .settings select::-ms-expand {
             display: none;
         }
@@ -266,11 +265,6 @@ def home():
             margin-top: 10px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         /* INPUT BAR OUTSIDE */
         .input-area {
             width: 80%;
@@ -298,20 +292,18 @@ def home():
             backdrop-filter: blur(20px);
         }
 
-        /* Pure white placeholder */
         #msg::placeholder {
-            color: rgba(255, 255, 255, 1) !important;
+            color: white !important;
             opacity: 1 !important;
         }
 
-        /* Remove highlight on focus */
         #msg:focus {
             outline: none !important;
             box-shadow: none !important;
             background: rgba(255, 255, 255, 0.28);
         }
 
-        /* CIRCULAR SVG SEND BUTTON */
+        /* SEND BUTTON */
         #send {
             width: 46px;
             height: 46px;
@@ -342,6 +334,72 @@ def home():
             margin-top: 6px;
             color: rgba(255, 255, 255, 0.75);
             font-size: 13px;
+        }
+
+        /* 📱 MOBILE FIXES */
+        @media (max-width: 600px) {
+
+            .chat-container {
+                width: 95%;
+                height: 60vh;
+                border-radius: 20px;
+            }
+
+            .header {
+                font-size: 20px;
+                padding: 14px;
+            }
+
+            .settings {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .settings-group {
+                width: 100%;
+            }
+
+            .settings select {
+                width: 100%;
+                font-size: 14px;
+                padding: 10px 36px 10px 12px;
+            }
+
+            #chat {
+                padding: 16px;
+                gap: 14px;
+            }
+
+            .msg {
+                font-size: 15px;
+                padding: 14px 16px;
+                max-width: 85%;
+            }
+
+            .input-area {
+                width: 95%;
+                margin-top: 30px;
+            }
+
+            .input-wrapper {
+                max-width: 100%;
+            }
+
+            #msg {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            #send {
+                width: 42px;
+                height: 42px;
+            }
+
+            #send svg {
+                width: 20px;
+                height: 20px;
+            }
         }
     </style>
 </head>
@@ -376,7 +434,6 @@ def home():
         </div>
     </div>
 
-    <!-- INPUT BAR OUTSIDE -->
     <div class="input-area">
         <div class="input-wrapper">
             <input id="msg" placeholder="Type your message...">
@@ -454,7 +511,6 @@ def home():
             }
         });
 
-        /* SHOW SEND BUTTON ONLY WHEN TYPING */
         msg.addEventListener("input", () => {
             if (msg.value.trim().length > 0) {
                 send.style.opacity = "1";
@@ -493,6 +549,7 @@ def chat():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
