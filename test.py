@@ -4,34 +4,69 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-HF_API_KEY = HF_API_KEY = os.getenv("HF_API_KEY")
+HF_API_KEY = os.getenv("HF_API_KEY")
 MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
-NORMAL_STYLES = {
-    "friendly": "In this mode and style, respond in a warm, supportive, and conversational tone. You may give the final answer and explain it clearly, but do so in a way that feels approachable and encouraging. Use simple language when possible and make the user feel comfortable asking questions. Be positive, motivating, and helpful while still ensuring the explanation is accurate and useful.",
-    "professional": "In this mode and style, respond with a clear, structured, and academic tone. Provide direct answers along with concise explanations when appropriate. Focus on accuracy, logic, and clarity, similar to a knowledgeable teacher or expert explaining a concept. Avoid slang, jokes, or overly casual language. Organize explanations logically and keep responses professional, informative, and easy to understand.",
-    "storyteller": "In this mode and style, you may provide the final answer but explain concepts through engaging narratives, analogies, or imaginative scenarios. Present information in a way that feels like a short story or vivid explanation that helps the user visualize the concept. The response should still be educational and accurate, but the tone should feel engaging, descriptive, and memorable."
-}
+# --- SYSTEM PROMPTS ---
+NORMAL_PROMPT = (
+    """You are an AI assistant designed to help students understand concepts and solve problems clearly and efficiently. In Normal Mode, your goal is to provide both the reasoning and the final result so the student fully understands how the solution is reached.
 
-TUTOR_STYLES = {
-    "friendly": "You are a friendly tutor. You never give the full answer. You give hints, guiding questions, and small steps to help the student think for themselves.",
-    "professional": "You are a clear and structured instructor. You avoid giving direct answers. You explain concepts, give partial steps, and help the student reason through the problem.",
-    "storyteller": "You explain ideas like a storyteller or narrator, but you never reveal the full answer. You guide the student with clues and thought‑provoking steps."
-}
+Follow these rules:
 
+Always provide the final answer or result when solving a problem. The result should be clearly stated so the student can easily identify it.
 
-def ask_ai(prompt, style, mode):
+Explain the reasoning or steps used to reach the result so the student understands the process behind the solution.
+
+Break complex problems into clear step-by-step explanations when appropriate.
+
+Use clear, simple language appropriate for a student learning the topic.
+
+When helpful, explain relevant concepts, formulas, or strategies that apply to the problem.
+
+If the student makes a mistake, politely explain why it is incorrect and demonstrate the correct reasoning that leads to the final result.
+
+Make sure the response includes both the explanation and the final answer, so
+the student can learn the method and see the correct outcome.
+
+Keep explanations organized, accurate, and focused on helping the student understand the topic.
+always answer short and simple but enough to help unless they request otherwise"""
+)
+
+TUTOR_PROMPT = (
+    """You are an AI tutor designed to help students learn by guiding them through problems without directly giving the final answer. Your goal is to help the student develop problem-solving skills rather than simply providing solutions.
+
+Follow these rules strictly:
+
+Never reveal the final answer to any problem, even if the student asks directly for it.
+
+Break the problem into clear steps and guide the student through the reasoning process required to reach the solution themselves.
+
+Ask guiding questions that help the student think about the next step instead of solving it for them.
+
+When appropriate, explain relevant concepts, formulas, or strategies that the student may need.
+
+If the student makes a mistake, politely point out the error and explain why, then guide them toward correcting it.
+
+Encourage the student to attempt each step before moving on.
+
+Provide hints that gradually increase in detail, but stop before revealing the final answer.
+
+always answer short and simple but enough to help unless they request otherwise
+
+NEVER GIVE THE FULL ANSWER
+
+NEVER GIVE THE FULL ASNWER"""
+)
+
+# --- AI CALL ---
+def ask_ai(prompt, mode):
     url = "https://router.huggingface.co/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {HF_API_KEY}",
         "Content-Type": "application/json"
     }
 
-    system_prompt = (
-        TUTOR_STYLES.get(style, "You are a tutor who gives hints, not answers.")
-        if mode == "tutor"
-        else NORMAL_STYLES.get(style, "You respond normally.")
-    )
+    system_prompt = TUTOR_PROMPT if mode == "tutor" else NORMAL_PROMPT
 
     payload = {
         "model": MODEL,
@@ -43,36 +78,12 @@ def ask_ai(prompt, style, mode):
 
     try:
         r = requests.post(url, headers=headers, json=payload, timeout=30)
-        raw = r.text
-        print("RAW RESPONSE:", raw)
+        data = r.json()
 
-        # Try to parse JSON
-        try:
-            data = r.json()
-        except:
-            return f"Error: API returned non‑JSON response: {raw}"
+        if "choices" in data:
+            return data["choices"][0]["message"]["content"]
 
-        # If API returned a string instead of a dict
-        if isinstance(data, str):
-            return f"API returned a string instead of JSON: {data}"
-
-        # If API returned an error object
-        if isinstance(data, dict) and "error" in data:
-            err = data["error"]
-            if isinstance(err, dict):
-                return f"API Error: {err.get('message', 'Unknown error')}"
-            else:
-                return f"API Error: {err}"
-
-        # If API returned the expected structure
-        if isinstance(data, dict) and "choices" in data:
-            try:
-                return data["choices"][0]["message"]["content"]
-            except Exception as e:
-                return f"Error: Unexpected model response format: {data}"
-
-        # Anything else
-        return f"Unexpected API response: {data}"
+        return "Unexpected API response."
 
     except Exception as e:
         return f"Error: {e}"
@@ -82,13 +93,10 @@ def ask_ai(prompt, style, mode):
 def home():
     return """
     <!DOCTYPE html>
-<!DOCTYPE html>
-<!DOCTYPE html>
 <html>
 <head>
     <title>ACE Tutor</title>
 
-    <!-- Prevent weird zooming on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -122,7 +130,6 @@ def home():
             100% { background-position: 0% 50%; }
         }
 
-        /* CHAT BOX (desktop) */
         .chat-container {
             width: 80%;
             max-width: 900px;
@@ -164,7 +171,6 @@ def home():
             pointer-events: none;
         }
 
-        /* three-dot menu (desktop hidden, mobile shown) */
         #menuBtn {
             position: absolute;
             right: 18px;
@@ -182,7 +188,6 @@ def home():
             stroke: white;
         }
 
-        /* SETTINGS (desktop) */
         .settings {
             padding: 16px 20px;
             background: rgba(255, 255, 255, 0.07);
@@ -207,32 +212,20 @@ def home():
 
         .settings select {
             appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-
             padding: 14px 40px 14px 14px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.35);
-
             background-color: rgba(255, 255, 255, 0.22);
-            background-clip: padding-box;
-
             color: white;
             font-size: 16px;
             cursor: pointer;
             backdrop-filter: blur(18px);
-
             background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 18px;
         }
 
-        .settings select::-ms-expand {
-            display: none;
-        }
-
-        /* CHAT AREA */
         #chat {
             flex: 1;
             padding: 24px 30px;
@@ -278,7 +271,6 @@ def home():
             margin-top: 10px;
         }
 
-        /* INPUT BAR (desktop) */
         .input-area {
             width: 80%;
             max-width: 900px;
@@ -307,13 +299,6 @@ def home():
 
         #msg::placeholder {
             color: white !important;
-            opacity: 1 !important;
-        }
-
-        #msg:focus {
-            outline: none !important;
-            box-shadow: none !important;
-            background: rgba(255, 255, 255, 0.28);
         }
 
         #send {
@@ -349,7 +334,6 @@ def home():
             font-size: 13px;
         }
 
-        /* Bottom sheet overlay + sheet */
         #sheetOverlay {
             position: fixed;
             inset: 0;
@@ -417,9 +401,6 @@ def home():
 
         .sheet-row select {
             appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-
             padding: 12px 36px 12px 12px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.35);
@@ -427,7 +408,6 @@ def home():
             color: white;
             font-size: 16px;
             backdrop-filter: blur(18px);
-
             background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
             background-repeat: no-repeat;
             background-position: right 10px center;
@@ -446,11 +426,10 @@ def home():
             cursor: pointer;
         }
 
-        /* 📱 MOBILE COPILOT LAYOUT */
         @media (max-width: 600px) {
 
             body {
-                overflow: auto; /* fix funky scrolling */
+                overflow: auto;
             }
 
             .chat-container {
@@ -459,8 +438,6 @@ def home():
                 height: calc(100vh - 80px);
                 margin-top: 0;
                 border-radius: 0;
-                border-left: none;
-                border-right: none;
                 background: transparent;
                 box-shadow: none;
             }
@@ -474,16 +451,12 @@ def home():
                 border-bottom: none;
             }
 
-            .header-title {
-                font-size: 16px;
-            }
-
             #menuBtn {
                 display: block;
             }
 
             .settings {
-                display: none; /* hide desktop settings bar */
+                display: none;
             }
 
             #chat {
@@ -498,30 +471,20 @@ def home():
                 padding: 12px 14px;
             }
 
-            /* FLOATING INPUT BAR, NO BOX BEHIND */
             .input-area {
                 position: fixed;
                 left: 0;
                 right: 0;
                 bottom: 0;
                 width: 100%;
-                max-width: 100%;
-                margin-top: 0;
                 padding: 10px 10px 16px;
-                background: transparent; /* remove box behind */
+                background: transparent;
                 z-index: 25;
-            }
-
-            .input-wrapper {
-                max-width: 900px;
-                margin: 0 auto;
-                gap: 8px;
             }
 
             #msg {
                 border-radius: 999px;
                 padding: 14px 16px;
-                font-size: 16px;
                 background: rgba(0, 0, 0, 0.35);
             }
 
@@ -529,15 +492,6 @@ def home():
                 width: 46px;
                 height: 46px;
                 background: rgba(255, 255, 255, 0.30);
-            }
-
-            #send svg {
-                width: 22px;
-                height: 22px;
-            }
-
-            .disclaimer {
-                display: none;
             }
         }
     </style>
@@ -565,16 +519,6 @@ def home():
                     <option value="tutor">Tutor (Hints Only)</option>
                 </select>
             </div>
-
-            <div class="settings-group">
-                <label>Style:</label>
-                <select id="style">
-                    <option value="friendly">Friendly</option>
-                    <option value="professional">Professional</option>
-                    <option value="sarcastic">Sarcastic</option>
-                    <option value="storyteller">Storyteller</option>
-                </select>
-            </div>
         </div>
 
         <div id="chat">
@@ -596,7 +540,6 @@ def home():
 
     <div class="disclaimer">ACE Tutor can make mistakes. Check important info.</div>
 
-    <!-- Bottom sheet + overlay -->
     <div id="sheetOverlay"></div>
 
     <div id="settingsSheet">
@@ -611,16 +554,6 @@ def home():
             </select>
         </div>
 
-        <div class="sheet-row">
-            <label for="styleSheet">Style</label>
-            <select id="styleSheet">
-                <option value="friendly">Friendly</option>
-                <option value="professional">Professional</option>
-                <option value="sarcastic">Sarcastic</option>
-                <option value="storyteller">Storyteller</option>
-            </select>
-        </div>
-
         <button class="sheet-close" id="sheetClose">Close</button>
     </div>
 
@@ -628,11 +561,9 @@ def home():
         const chat = document.getElementById("chat");
         const msg = document.getElementById("msg");
         const send = document.getElementById("send");
-        const style = document.getElementById("style");
         const mode = document.getElementById("mode");
 
         const modeSheet = document.getElementById("modeSheet");
-        const styleSheet = document.getElementById("styleSheet");
         const menuBtn = document.getElementById("menuBtn");
         const sheetOverlay = document.getElementById("sheetOverlay");
         const settingsSheet = document.getElementById("settingsSheet");
@@ -676,7 +607,6 @@ def home():
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     message: text,
-                    style: style.value,
                     mode: mode.value
                 })
             });
@@ -694,72 +624,57 @@ def home():
             }
         });
 
-        msg.addEventListener("input", () => {
-            if (msg.value.trim().length > 0) {
-                send.style.opacity = "1";
-                send.style.pointerEvents = "auto";
-            } else {
-                send.style.opacity = "0";
-                send.style.pointerEvents = "none";
-            }
-        });
+msg.addEventListener("input", () => {
+    if (msg.value.trim().length > 0) {
+        send.style.opacity = "1";
+        send.style.pointerEvents = "auto";
+    } else {
+        send.style.opacity = "0";
+        send.style.pointerEvents = "none";
+    }
+});
 
-        /* sync sheet selects with main selects */
-        function syncSheetFromMain() {
-            modeSheet.value = mode.value;
-            styleSheet.value = style.value;
-        }
+/* sync sheet selects with main selects */
+function syncSheetFromMain() {
+    modeSheet.value = mode.value;
+}
 
-        function syncMainFromSheet() {
-            mode.value = modeSheet.value;
-            style.value = styleSheet.value;
-        }
+function syncMainFromSheet() {
+    mode.value = modeSheet.value;
+}
 
-        modeSheet.addEventListener("change", syncMainFromSheet);
-        styleSheet.addEventListener("change", syncMainFromSheet);
+modeSheet.addEventListener("change", syncMainFromSheet);
 
-        /* bottom sheet open/close */
-        function openSheet() {
-            syncSheetFromMain();
-            sheetOverlay.classList.add("active");
-            settingsSheet.classList.add("active");
-        }
+/* bottom sheet open/close */
+function openSheet() {
+    syncSheetFromMain();
+    sheetOverlay.classList.add("active");
+    settingsSheet.classList.add("active");
+}
 
-        function closeSheet() {
-            sheetOverlay.classList.remove("active");
-            settingsSheet.classList.remove("active");
-        }
+function closeSheet() {
+    sheetOverlay.classList.remove("active");
+    settingsSheet.classList.remove("active");
+}
 
-        menuBtn.addEventListener("click", openSheet);
-        sheetClose.addEventListener("click", closeSheet);
-        sheetOverlay.addEventListener("click", closeSheet);
+menuBtn.addEventListener("click", openSheet);
+sheetClose.addEventListener("click", closeSheet);
+sheetOverlay.addEventListener("click", closeSheet);
     </script>
 
 </body>
 </html>
-
-
-
     """
 
 
 @app.route("/chat", methods=["POST"])
 def chat():
     user_msg = request.json.get("message")
-    style = request.json.get("style", "friendly")
     mode = request.json.get("mode", "normal")
-    reply = ask_ai(user_msg, style, mode)
+    reply = ask_ai(user_msg, mode)
     return jsonify({"reply": reply})
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
-
-
-
-
-
-
